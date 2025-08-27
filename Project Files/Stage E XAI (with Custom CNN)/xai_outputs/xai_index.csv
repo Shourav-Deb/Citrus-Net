@@ -1,0 +1,11 @@
+index,true,pred,pred_prob,file
+0,murcott,murcott,0.547488808631897,xai_outputs/xai_00_true-murcott_pred-murcott.png
+1,murcott,ponkan,0.7558147311210632,xai_outputs/xai_01_true-murcott_pred-ponkan.png
+2,murcott,murcott,0.8875200748443604,xai_outputs/xai_02_true-murcott_pred-murcott.png
+3,murcott,murcott,0.820637583732605,xai_outputs/xai_03_true-murcott_pred-murcott.png
+4,murcott,murcott,0.8712046146392822,xai_outputs/xai_04_true-murcott_pred-murcott.png
+5,murcott,murcott,0.9143545031547546,xai_outputs/xai_05_true-murcott_pred-murcott.png
+6,murcott,murcott,0.6455448865890503,xai_outputs/xai_06_true-murcott_pred-murcott.png
+7,murcott,murcott,0.9907968044281006,xai_outputs/xai_07_true-murcott_pred-murcott.png
+8,murcott,murcott,0.9949560761451721,xai_outputs/xai_08_true-murcott_pred-murcott.png
+9,murcott,murcott,0.9267709851264954,xai_outputs/xai_09_true-murcott_pred-murcott.png
