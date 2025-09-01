@@ -4,7 +4,7 @@ An end-to-end **image classification pipeline** that combines 🧱 **Custom CNN*
 
 ---
 
-![Project Banner]([https://dummyimage.com/1200x400/000/fff&text=Citrus-Net+Project+Banner](https://i.pinimg.com/1200x/78/35/de/7835dec62d0c7a980cf778ee4f305504.jpg))  
+![Project Banner]([https://i.pinimg.com/1200x/78/35/de/7835dec62d0c7a980cf778ee4f305504.jpg))  
 
 ---
 
