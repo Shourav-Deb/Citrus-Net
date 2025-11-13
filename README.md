@@ -77,7 +77,7 @@ streamlit run app.py
 (Generated using Grad-CAM & LIME on random test images)
 
 ## 📧 Contact
-If you need the trained models or datasets for academic purposes, feel free to [**Contact Anytime**](mailto:heyneeddev@gmail.com).
+If you need the trained models or report file for academic purposes, feel free to [**Contact Anytime**](mailto:heyneeddev@gmail.com).
 
 ## ⭐ Acknowledgements
 - Built with PyTorch, torchvision, scikit-learn, pytorch-grad-cam, LIME, and Streamlit.
