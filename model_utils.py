@@ -10,7 +10,6 @@ import matplotlib.cm as cm
 def load_model(ckpt_path, num_classes):
     checkpoint = torch.load(ckpt_path, map_location="cpu")
 
-    # Change backbone here if needed
     model = models.efficientnet_b0(weights=None)
     in_features = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(in_features, num_classes)
@@ -46,10 +45,38 @@ class GradCAM:
 
 
 # -------------------------------
-# Overlay heatmap
+# SAFE overlay function (FIXED)
 # -------------------------------
 def overlay_cam(image, cam):
-    cam = np.clip(cam, 0, 1)
-    heatmap = cm.jet(cam)[..., :3]
+    """
+    image: (H, W, 3) in [0,1]
+    cam:   (h, w) in [0,1]
+    """
+
+    H, W, _ = image.shape
+
+    # Resize CAM manually (no OpenCV)
+    cam_resized = np.array(
+        ImageResize(cam, (H, W))
+    )
+
+    # Apply colormap
+    heatmap = cm.jet(cam_resized)[..., :3]
+
+    # Overlay
     overlay = 0.5 * image + 0.5 * heatmap
     return np.clip(overlay, 0, 1)
+
+
+# -------------------------------
+# Minimal resize helper (no cv2)
+# -------------------------------
+def ImageResize(cam, size):
+    """
+    Simple nearest-neighbor resize using NumPy
+    """
+    H, W = size
+    h, w = cam.shape
+    y_idx = (np.linspace(0, h - 1, H)).astype(int)
+    x_idx = (np.linspace(0, w - 1, W)).astype(int)
+    return cam[y_idx[:, None], x_idx]
