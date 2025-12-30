@@ -6,39 +6,54 @@ import torchvision.transforms as transforms
 
 from model_utils import load_model, GradCAM, overlay_cam
 
-# -------------------------------
-# Page config
-# -------------------------------
-st.set_page_config(page_title="Citrus Fruit Classifier", layout="wide")
-st.title("Citrus Fruit Classification with Grad-CAM")
+st.set_page_config(page_title="Citrus Classifier", layout="wide")
+st.title("Citrus Fruit Classification (All Models)")
 
 CLASSES = ["murcott", "ponkan", "tangerine", "tankan"]
 
-# -------------------------------
-# Sidebar uploads
-# -------------------------------
-st.sidebar.header("Upload Model")
-model_file = st.sidebar.file_uploader("Upload trained model (.pt)", type=["pt"])
+MODEL_OPTIONS = {
+    "Custom CNN (Stage B)": "custom_cnn",
+    "ResNet34 (TL)": "resnet34",
+    "EfficientNet-B0 (TL)": "efficientnet_b0",
+    "DenseNet121 (TL)": "densenet121",
+    "ConvNeXt-Tiny (TL)": "convnext_tiny",
+    "ViT-B/16 (Stage D)": "vit_b_16"
+}
 
-st.sidebar.header("Upload Images")
+# ===============================
+# Sidebar
+# ===============================
+model_label = st.sidebar.selectbox(
+    "Select Model",
+    list(MODEL_OPTIONS.keys())
+)
+model_name = MODEL_OPTIONS[model_label]
+
+model_file = st.sidebar.file_uploader(
+    "Upload matching .pt model",
+    type=["pt"]
+)
+
 image_files = st.sidebar.file_uploader(
-    "Upload one or more images",
+    "Upload image(s)",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True
 )
 
-# -------------------------------
-# Main logic
-# -------------------------------
+# ===============================
+# Main
+# ===============================
 if model_file and image_files:
     with open("temp_model.pt", "wb") as f:
         f.write(model_file.read())
 
-    model = load_model("temp_model.pt", num_classes=len(CLASSES))
+    model, target_layer = load_model(
+        "temp_model.pt",
+        model_name,
+        num_classes=len(CLASSES)
+    )
 
-    # EfficientNet target layer
-    target_layer = model.features[-1][0]
-    cam_engine = GradCAM(model, target_layer)
+    cam_engine = GradCAM(target_layer) if target_layer else None
 
     tfm = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -49,32 +64,17 @@ if model_file and image_files:
         )
     ])
 
-    st.header("Batch Predictions")
-
     cols = st.columns(2)
 
     for i, image_file in enumerate(image_files):
         img = Image.open(image_file).convert("RGB")
         img_tensor = tfm(img).unsqueeze(0)
 
-        # -------------------------------
-        # Prediction pass (NO gradients)
-        # -------------------------------
+        # Prediction
         with torch.no_grad():
-            logits_pred = model(img_tensor)
-            probs = torch.softmax(logits_pred, dim=1)[0].cpu().numpy()
+            logits = model(img_tensor)
+            probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
             pred_idx = int(np.argmax(probs))
-
-        # -------------------------------
-        # Grad-CAM pass (WITH gradients)
-        # -------------------------------
-        model.zero_grad(set_to_none=True)
-        logits_cam = model(img_tensor)
-        logits_cam[0, pred_idx].backward()
-        cam = cam_engine.generate()
-
-        img_np = np.array(img.resize((224, 224))) / 255.0
-        cam_img = overlay_cam(img_np, cam)
 
         with cols[i % 2]:
             st.image(img, caption=image_file.name, use_column_width=True)
@@ -84,7 +84,19 @@ if model_file and image_files:
                 **Confidence:** {probs[pred_idx]*100:.2f}%
                 """
             )
-            st.image(cam_img, caption="Grad-CAM", use_column_width=True)
+
+            # Grad-CAM only for CNNs
+            if cam_engine:
+                model.zero_grad(set_to_none=True)
+                logits_cam = model(img_tensor)
+                logits_cam[0, pred_idx].backward()
+                cam = cam_engine.generate()
+
+                img_np = np.array(img.resize((224, 224))) / 255.0
+                cam_img = overlay_cam(img_np, cam)
+                st.image(cam_img, caption="Grad-CAM", use_column_width=True)
+            else:
+                st.info("Grad-CAM is not applicable to Vision Transformers.")
 
 else:
-    st.info("Please upload a model file and at least one image to begin.")
+    st.info("Select a model, upload its .pt file, and upload images.")
