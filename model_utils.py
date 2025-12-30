@@ -4,19 +4,24 @@ import torchvision.models as models
 import numpy as np
 import matplotlib.cm as cm
 
-# ==================================================
-# Custom CNN (Stage B)
-# ==================================================
+# ============================================================
+# Stage B — Custom CNN (your own architecture)
+# ============================================================
 class CitrusNet(nn.Module):
     def __init__(self, num_classes=4):
         super().__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(3, 32, 3, padding=1), nn.ReLU(),
+            nn.Conv2d(3, 32, 3, padding=1),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(),
+
+            nn.Conv2d(32, 64, 3, padding=1),
+            nn.ReLU(inplace=True),
             nn.MaxPool2d(2),
-            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(),
-            nn.AdaptiveAvgPool2d(1)
+
+            nn.Conv2d(64, 128, 3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.AdaptiveAvgPool2d(1),
         )
         self.classifier = nn.Linear(128, num_classes)
 
@@ -26,10 +31,10 @@ class CitrusNet(nn.Module):
         return self.classifier(x)
 
 
-# ==================================================
-# Build model by name
-# ==================================================
-def build_model(model_name, num_classes):
+# ============================================================
+# Build model + select Grad-CAM target layer
+# ============================================================
+def build_model(model_name: str, num_classes: int):
     name = model_name.lower()
 
     if name == "custom_cnn":
@@ -38,6 +43,11 @@ def build_model(model_name, num_classes):
 
     elif name == "resnet34":
         model = models.resnet34(weights=None)
+        model.fc = nn.Linear(model.fc.in_features, num_classes)
+        target_layer = model.layer4[-1].conv2
+
+    elif name == "resnet18":
+        model = models.resnet18(weights=None)
         model.fc = nn.Linear(model.fc.in_features, num_classes)
         target_layer = model.layer4[-1].conv2
 
@@ -67,21 +77,21 @@ def build_model(model_name, num_classes):
         model.heads.head = nn.Linear(
             model.heads.head.in_features, num_classes
         )
-        target_layer = None
+        target_layer = None  # Grad-CAM not applicable
 
     else:
-        raise ValueError(f"Unsupported model: {model_name}")
+        raise ValueError(f"Unsupported model type: {model_name}")
 
     return model, target_layer
 
 
-# ==================================================
-# SAFE checkpoint loader (FIXED)
-# ==================================================
-def load_model(ckpt_path, model_name, num_classes):
+# ============================================================
+# SAFE checkpoint loader (DenseNet-proof)
+# ============================================================
+def load_model(ckpt_path: str, model_name: str, num_classes: int):
     checkpoint = torch.load(ckpt_path, map_location="cpu")
 
-    # Handle both checkpoint formats
+    # Accept both checkpoint formats
     if isinstance(checkpoint, dict) and "model_state" in checkpoint:
         state_dict = checkpoint["model_state"]
     elif isinstance(checkpoint, dict):
@@ -90,54 +100,68 @@ def load_model(ckpt_path, model_name, num_classes):
         raise ValueError("Unsupported checkpoint format")
 
     model, target_layer = build_model(model_name, num_classes)
+    model_dict = model.state_dict()
 
-    # Try strict load first
-    try:
-        model.load_state_dict(state_dict, strict=True)
-    except RuntimeError:
-        # Fallback: allow head mismatch
-        model.load_state_dict(state_dict, strict=False)
+    # --------------------------------------------------------
+    # Filter weights by key AND tensor shape (critical fix)
+    # --------------------------------------------------------
+    filtered_state = {}
+    for k, v in state_dict.items():
+        if k in model_dict and model_dict[k].shape == v.shape:
+            filtered_state[k] = v
 
+    # Load safely
+    model.load_state_dict(filtered_state, strict=False)
     model.eval()
+
     return model, target_layer
 
 
-# ==================================================
-# Grad-CAM
-# ==================================================
+# ============================================================
+# Grad-CAM implementation
+# ============================================================
 class GradCAM:
     def __init__(self, target_layer):
         self.activations = None
         self.gradients = None
-        target_layer.register_forward_hook(self._fwd)
-        target_layer.register_full_backward_hook(self._bwd)
 
-    def _fwd(self, m, i, o):
-        self.activations = o.detach()
+        target_layer.register_forward_hook(self._forward_hook)
+        target_layer.register_full_backward_hook(self._backward_hook)
 
-    def _bwd(self, m, gi, go):
-        self.gradients = go[0].detach()
+    def _forward_hook(self, module, input, output):
+        self.activations = output.detach()
+
+    def _backward_hook(self, module, grad_input, grad_output):
+        self.gradients = grad_output[0].detach()
 
     def generate(self):
-        w = self.gradients.mean(dim=(2, 3), keepdim=True)
-        cam = (w * self.activations).sum(dim=1)
+        weights = self.gradients.mean(dim=(2, 3), keepdim=True)
+        cam = (weights * self.activations).sum(dim=1)
         cam = torch.relu(cam)
         cam = cam / (cam.max() + 1e-8)
         return cam[0].cpu().numpy()
 
 
-# ==================================================
-# Overlay CAM
-# ==================================================
-def overlay_cam(image, cam):
+# ============================================================
+# Grad-CAM overlay (no OpenCV)
+# ============================================================
+def overlay_cam(image: np.ndarray, cam: np.ndarray):
+    """
+    image: (H, W, 3) float in [0,1]
+    cam:   (h, w) float in [0,1]
+    """
     H, W, _ = image.shape
-    cam = resize_cam(cam, H, W)
-    heatmap = cm.jet(cam)[..., :3]
-    return np.clip(0.5 * image + 0.5 * heatmap, 0, 1)
+    cam_resized = resize_cam(cam, H, W)
+    heatmap = cm.jet(cam_resized)[..., :3]
+    overlay = 0.5 * image + 0.5 * heatmap
+    return np.clip(overlay, 0, 1)
 
 
-def resize_cam(cam, H, W):
+def resize_cam(cam: np.ndarray, H: int, W: int):
+    """
+    Simple nearest-neighbor resize using NumPy only
+    """
     h, w = cam.shape
-    y = (np.linspace(0, h - 1, H)).astype(int)
-    x = (np.linspace(0, w - 1, W)).astype(int)
-    return cam[y[:, None], x]
+    y_idx = (np.linspace(0, h - 1, H)).astype(int)
+    x_idx = (np.linspace(0, w - 1, W)).astype(int)
+    return cam[y_idx[:, None], x_idx]
