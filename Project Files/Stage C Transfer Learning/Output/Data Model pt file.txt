@@ -1,8 +1,0 @@
-👍 Have 4 trained model
-
-🔹 tl_convnext_tiny_best.pt
-🔹 tl_densenet121_best.pt
-🔹 tl_efficientnet_b0_best.pt
-🔹 tl_resnet34_best.pt
-
-👉 For Model Contact Me.
