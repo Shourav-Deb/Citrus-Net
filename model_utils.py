@@ -5,11 +5,12 @@ import numpy as np
 import matplotlib.cm as cm
 
 # -------------------------------
-# Load model
+# Load uploaded model
 # -------------------------------
-def load_model(ckpt_path, num_classes=4):
+def load_model(ckpt_path, num_classes):
     checkpoint = torch.load(ckpt_path, map_location="cpu")
 
+    # Change backbone here if needed
     model = models.efficientnet_b0(weights=None)
     in_features = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(in_features, num_classes)
@@ -24,20 +25,19 @@ def load_model(ckpt_path, num_classes=4):
 # -------------------------------
 class GradCAM:
     def __init__(self, model, target_layer):
-        self.model = model
-        self.gradients = None
         self.activations = None
+        self.gradients = None
 
         target_layer.register_forward_hook(self._forward_hook)
         target_layer.register_full_backward_hook(self._backward_hook)
 
-    def _forward_hook(self, module, input, output):
-        self.activations = output.detach()
+    def _forward_hook(self, module, inp, out):
+        self.activations = out.detach()
 
-    def _backward_hook(self, module, grad_input, grad_output):
-        self.gradients = grad_output[0].detach()
+    def _backward_hook(self, module, grad_in, grad_out):
+        self.gradients = grad_out[0].detach()
 
-    def generate(self, class_idx):
+    def generate(self):
         weights = self.gradients.mean(dim=(2, 3), keepdim=True)
         cam = (weights * self.activations).sum(dim=1)
         cam = torch.relu(cam)
@@ -46,7 +46,7 @@ class GradCAM:
 
 
 # -------------------------------
-# Heatmap overlay (NO OpenCV)
+# Overlay heatmap
 # -------------------------------
 def overlay_cam(image, cam):
     cam = np.clip(cam, 0, 1)

@@ -6,20 +6,20 @@ import torchvision.transforms as transforms
 
 from model_utils import load_model, GradCAM, overlay_cam
 
+# -------------------------------
+# Page config
+# -------------------------------
 st.set_page_config(page_title="Citrus Fruit Classifier", layout="wide")
 st.title("Citrus Fruit Classification with Grad-CAM")
 
 CLASSES = ["murcott", "ponkan", "tangerine", "tankan"]
 
 # -------------------------------
-# Upload model
+# Sidebar uploads
 # -------------------------------
 st.sidebar.header("Upload Model")
-model_file = st.sidebar.file_uploader("Upload trained .pt model", type=["pt"])
+model_file = st.sidebar.file_uploader("Upload trained model (.pt)", type=["pt"])
 
-# -------------------------------
-# Upload images (BATCH)
-# -------------------------------
 st.sidebar.header("Upload Images")
 image_files = st.sidebar.file_uploader(
     "Upload one or more images",
@@ -27,11 +27,16 @@ image_files = st.sidebar.file_uploader(
     accept_multiple_files=True
 )
 
+# -------------------------------
+# Main logic
+# -------------------------------
 if model_file and image_files:
     with open("temp_model.pt", "wb") as f:
         f.write(model_file.read())
 
     model = load_model("temp_model.pt", num_classes=len(CLASSES))
+
+    # EfficientNet target layer
     target_layer = model.features[-1][0]
     cam_engine = GradCAM(model, target_layer)
 
@@ -48,24 +53,31 @@ if model_file and image_files:
 
     cols = st.columns(2)
 
-    for idx, image_file in enumerate(image_files):
+    for i, image_file in enumerate(image_files):
         img = Image.open(image_file).convert("RGB")
         img_tensor = tfm(img).unsqueeze(0)
 
+        # -------------------------------
+        # Prediction pass (NO gradients)
+        # -------------------------------
         with torch.no_grad():
-            logits = model(img_tensor)
-            probs = torch.softmax(logits, dim=1)[0].numpy()
-            pred_idx = probs.argmax()
+            logits_pred = model(img_tensor)
+            probs = torch.softmax(logits_pred, dim=1)[0].cpu().numpy()
+            pred_idx = int(np.argmax(probs))
 
-        model.zero_grad()
-        logits[0, pred_idx].backward()
-        cam = cam_engine.generate(pred_idx)
+        # -------------------------------
+        # Grad-CAM pass (WITH gradients)
+        # -------------------------------
+        model.zero_grad(set_to_none=True)
+        logits_cam = model(img_tensor)
+        logits_cam[0, pred_idx].backward()
+        cam = cam_engine.generate()
 
         img_np = np.array(img.resize((224, 224))) / 255.0
         cam_img = overlay_cam(img_np, cam)
 
-        with cols[idx % 2]:
-            st.image(img, caption=f"Input: {image_file.name}", use_column_width=True)
+        with cols[i % 2]:
+            st.image(img, caption=image_file.name, use_column_width=True)
             st.markdown(
                 f"""
                 **Prediction:** {CLASSES[pred_idx]}  
@@ -73,3 +85,6 @@ if model_file and image_files:
                 """
             )
             st.image(cam_img, caption="Grad-CAM", use_column_width=True)
+
+else:
+    st.info("Please upload a model file and at least one image to begin.")
