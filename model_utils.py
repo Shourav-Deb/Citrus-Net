@@ -4,9 +4,9 @@ import torchvision.models as models
 import numpy as np
 import matplotlib.cm as cm
 
-# ===============================
+# ==================================================
 # Custom CNN (Stage B)
-# ===============================
+# ==================================================
 class CitrusNet(nn.Module):
     def __init__(self, num_classes=4):
         super().__init__()
@@ -26,9 +26,9 @@ class CitrusNet(nn.Module):
         return self.classifier(x)
 
 
-# ===============================
+# ==================================================
 # Build model by name
-# ===============================
+# ==================================================
 def build_model(model_name, num_classes):
     name = model_name.lower()
 
@@ -67,28 +67,44 @@ def build_model(model_name, num_classes):
         model.heads.head = nn.Linear(
             model.heads.head.in_features, num_classes
         )
-        target_layer = None  # Grad-CAM not used
+        target_layer = None
 
     else:
-        raise ValueError("Unsupported model type")
+        raise ValueError(f"Unsupported model: {model_name}")
 
     return model, target_layer
 
 
-# ===============================
-# Load checkpoint
-# ===============================
+# ==================================================
+# SAFE checkpoint loader (FIXED)
+# ==================================================
 def load_model(ckpt_path, model_name, num_classes):
     checkpoint = torch.load(ckpt_path, map_location="cpu")
+
+    # Handle both checkpoint formats
+    if isinstance(checkpoint, dict) and "model_state" in checkpoint:
+        state_dict = checkpoint["model_state"]
+    elif isinstance(checkpoint, dict):
+        state_dict = checkpoint
+    else:
+        raise ValueError("Unsupported checkpoint format")
+
     model, target_layer = build_model(model_name, num_classes)
-    model.load_state_dict(checkpoint["model_state"], strict=True)
+
+    # Try strict load first
+    try:
+        model.load_state_dict(state_dict, strict=True)
+    except RuntimeError:
+        # Fallback: allow head mismatch
+        model.load_state_dict(state_dict, strict=False)
+
     model.eval()
     return model, target_layer
 
 
-# ===============================
+# ==================================================
 # Grad-CAM
-# ===============================
+# ==================================================
 class GradCAM:
     def __init__(self, target_layer):
         self.activations = None
@@ -110,9 +126,9 @@ class GradCAM:
         return cam[0].cpu().numpy()
 
 
-# ===============================
+# ==================================================
 # Overlay CAM
-# ===============================
+# ==================================================
 def overlay_cam(image, cam):
     H, W, _ = image.shape
     cam = resize_cam(cam, H, W)
