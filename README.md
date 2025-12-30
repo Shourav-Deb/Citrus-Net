@@ -42,7 +42,7 @@ This repository contains the complete project for building and explaining a full
 
 
 ## 📂 Dataset  
-- We used the [**Citrus Fruit Dataset**](https://data.mendeley.com/datasets/bxfgvsn9kw/6) containing high-quality images of citrus fruits for training, validation, and testing.  
+- I used the [**Citrus Fruit Dataset**](https://data.mendeley.com/datasets/bxfgvsn9kw/6) containing high-quality images of citrus fruits for training, validation, and testing.  
 
 
 
