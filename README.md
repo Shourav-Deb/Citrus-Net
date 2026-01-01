@@ -63,7 +63,7 @@ This repository contains the complete project for building and explaining a full
 ### 🌐 Use the Web App
 
 1. Open the live application [No installation required]  
-   👉 https://citrus-net.streamlit.app
+   👉  [**Citrus Fruit Classification**](https://citrus-net.streamlit.app)
 
 2. From the left sidebar:
    - Select a model:
