@@ -80,8 +80,8 @@ This repository contains the complete project for building and explaining a full
    - Optional LIME explanations
 
 ⚠️ Important Display Notice
-This app is styled for Dark mode. Light themes may hide some UI elements.
-Change via [Right Side ⋮ → Settings → App Theme → Dark].
+   - This app is styled for Dark mode. Light theme may hide some UI elements.
+   - Change via [Right Side ⋮ → Settings → App Theme → Dark].
 
 
 ### 💻 Run Locally (Optional)
