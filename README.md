@@ -24,7 +24,7 @@ This repository contains the complete project for building and explaining a full
 
 
 ## ✅ Key Features  
-- 🧱 Custom CNN with ≥65% accuracy (baseline target).  
+- 🧱 Custom Made CNN [CitrusNet] with ≥65% accuracy (baseline target).  
 - 🔁 Transfer learning with four unique CNN architectures.  
 - 🔭 Vision Transformer experiment.  
 - 📊 Comparative evaluation (accuracy, precision, recall, F1, confusion matrices).  
