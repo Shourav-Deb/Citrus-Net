@@ -1,6 +1,6 @@
 # 🍊 Introducing **Citrus-Net**  
 
-An end-to-end **image classification pipeline** that combines 🧱 **Custom CNN**, 🔁 **Transfer Learning**, and 🔭 **Vision Transformer** models — enhanced with 🧩 **Explainable AI (XAI)** visualizations and deployed in a 🌐 **Streamlit app**.  
+An end-to-end **image classification pipeline** that combines 🧱 **Custom CNN**, 🔁 **Transfer Learning**, and 🔭 **Vision Transformer** models - enhanced with 🧩 **Explainable AI (XAI)** visualizations and deployed in a **Streamlit app**.  
 
 ---
 
@@ -15,7 +15,7 @@ This repository contains the complete project for building and explaining a full
 
 ## 🚀 Project Stages  
 - 🔎 **Data Preparation** – Exploratory analysis, class balance checks, preprocessing, and augmentations.  
-- 🧱 **Custom CNN** – Novel convolutional network designed and trained from scratch.  
+- 🧱 **Custom CNN (CitrusNet)** – Novel convolutional network designed and trained from scratch.  
 - 🔁 **Transfer Learning** – Fine-tuning four pretrained CNN backbones (ImageNet weights).  
 - 🔭 **Vision Transformer (ViT)** – Transformer-based classifier for advanced performance.  
 - 🧩 **XAI (Explainability)** – Applying Grad-CAM, Score-CAM, LIME, and SHAP to interpret predictions.  
@@ -25,7 +25,7 @@ This repository contains the complete project for building and explaining a full
 
 ## ✅ Key Features  
 - 🧱 Custom CNN with ≥65% accuracy (baseline target).  
-- 🔁 Transfer learning with four unique CNN architectures (not from demo code).  
+- 🔁 Transfer learning with four unique CNN architectures.  
 - 🔭 Vision Transformer experiment.  
 - 📊 Comparative evaluation (accuracy, precision, recall, F1, confusion matrices).  
 - 🧩 XAI overlays on ≥10 test images with detailed interpretation.  
@@ -42,42 +42,56 @@ This repository contains the complete project for building and explaining a full
 
 
 ## 📂 Dataset  
-We used the 🍊 [**Citrus Fruit Dataset**](https://data.mendeley.com/datasets/bxfgvsn9kw/6) containing high-quality images of citrus fruits for training, validation, and testing.  
+- I used the [**Citrus Fruit Dataset**](https://data.mendeley.com/datasets/bxfgvsn9kw/6) containing high-quality images of citrus fruits for training, validation, and testing.  
 
 
 
-## 📑 Deliverables  
-- 📦 Public GitHub repo with runnable code.  
-- 💾 Trained model weights (via Google Drive link after contacting).  
-- 📄 Scientific project report (IEEE/ACM style).  
-- 🌐 Streamlit demo folder.
+## 📑 Deliverables  (After Contact)
+- 📄 Scientific Project Report (IEEE/ACM style).
+- 📦 6 Runnable Jupiter Notebook Code.  
+- 💾 6 Trained Model Weights.
+  
+     - CitrusNet_[custom_cnn].pt
+     - Efficientnet_B0.pt
+     - Resnet34.pt
+     - Densenet121.pt
+     - Convnext_Tiny.pt
+     - VIT_Best.pt 
+
+## 🚀 Quick Start
+
+### 🌐 Use the Web App
+
+1. Open the live application [No installation required]  
+   👉 https://citrus-net.streamlit.app
+
+2. From the left sidebar:
+   - Select a model:
+     - CitrusNet [Custom]
+     - EfficientNet-B0 [Best]
+     - ResNet34
+     - or Upload your own `.pt` model
+   - Upload one or more citrus fruit images (`.jpg`, `.png`)
+
+3. View the results:
+   - Predicted fruit class
+   - Confidence score
+   - Grad-CAM visual explanations
+   - Optional LIME explanations
 
 
+### 💻 Run Locally (Optional)
 
-## 🚀 Quick Start  
-
-### 1️⃣ Clone the Repository  
 ```bash
-git clone https://github.com/your-username/Citrus-Net.git
+git clone https://github.com/Shourav-Deb/Citrus-Net.git
 cd Citrus-Net
-```
-
-### 2️⃣ Install Requirements
-```bash
 pip install -r requirements.txt
-```
-
-### 3️⃣ Run the Streamlit App
-```bash
 streamlit run app.py
 ```
 ---
 
-## 📸 XAI Heatmap
-(Generated using Grad-CAM & LIME on random test images)
-
 ## 📧 Contact
-If you need the trained models or report file for academic purposes, feel free to [**Contact Anytime**](mailto:heyneeddev@gmail.com).
+If you need the trained notebook, models or report file for academic purposes, feel free to [**Contact Anytime**](mailto:heyneeddev@gmail.com).
 
 ## ⭐ Acknowledgements
 - Built with PyTorch, torchvision, scikit-learn, pytorch-grad-cam, LIME, and Streamlit.
