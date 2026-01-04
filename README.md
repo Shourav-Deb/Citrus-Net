@@ -31,6 +31,14 @@ This repository contains the complete project for building and explaining a full
 - 🧩 XAI overlays on ≥10 test images with detailed interpretation.  
 - 🌐 Streamlit app for model selection, predictions, and side-by-side explanations.  
 
+| Model                    | Training Type     | Test Accuracy                    | Macro F1    | Notes                         |
+| ------------------------ | ----------------- | -------------------------------- | ----------- | ----------------------------- |
+| **EfficientNet-B0**      | Transfer Learning | **Highest (reported best)**      | **Highest** | Selected for XAI & deployment |
+| **ResNet34**             | Transfer Learning | Slightly lower than EfficientNet | High        | Very stable baseline          |
+| **ConvNeXt-Tiny**        | Transfer Learning | Comparable to ResNet             | High        | Heavier, no clear gain        |
+| **CitrusNet (Proposed)** | From Scratch      | ~97%                             | ~0.97       | Excellent for custom CNN      |
+| **DenseNet121**          | Transfer Learning | Lower than ResNet                | Moderate    | Less stable                   |
+| **ViT-B/16**             | Transformer       | Lowest                           | Lowest      | Data-limited underperformance |
 
 
 ## 🛠️ Tech Stack  
@@ -57,16 +65,6 @@ This repository contains the complete project for building and explaining a full
      - Densenet121.pt
      - Convnext_Tiny.pt
      - VIT_Best.pt 
-
-| Dataset ↓ / Model →                  | CitrusNet (Custom) | ResNet34 | DenseNet121 | EfficientNet-B0 | ConvNeXt-Tiny | ViT-B/16   |
-| ------------------------------------ | ------------------ | -------- | ----------- | --------------- | ------------- | ---------- |
-| **Citrus Original**                  | 🟡 Good            | 🟡 Good  | 🟡 Good     | 🟢 Best         | 🟢 Best       | 🟠 Average |
-| **Citrus Augmented**                 | 🟢 Best            | 🟢 Best  | 🟢 Best     | 🟢 Best         | 🟢 Best       | 🟡 Good    |
-| **Generalization**                   | 🟡 Good            | 🟢 Best  | 🟢 Best     | 🟢 Best         | 🟢 Best       | 🟠 Average |
-| **Training Stability**               | 🟢 Best            | 🟢 Best  | 🟡 Good     | 🟢 Best         | 🟡 Good       | 🟠 Average |
-| **Explainability (Grad-CAM / LIME)** | 🟢 Best            | 🟢 Best  | 🟡 Good     | 🟢 Best         | 🟡 Good       | 🔴 Weak    |
-
-
 
 
 ## 🚀 Quick Start
