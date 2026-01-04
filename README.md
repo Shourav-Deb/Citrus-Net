@@ -58,6 +58,17 @@ This repository contains the complete project for building and explaining a full
      - Convnext_Tiny.pt
      - VIT_Best.pt 
 
+| Dataset ↓ / Model →                  | CitrusNet (Custom) | ResNet34 | DenseNet121 | EfficientNet-B0 | ConvNeXt-Tiny | ViT-B/16   |
+| ------------------------------------ | ------------------ | -------- | ----------- | --------------- | ------------- | ---------- |
+| **Citrus Original**                  | 🟡 Good            | 🟡 Good  | 🟡 Good     | 🟢 Best         | 🟢 Best       | 🟠 Average |
+| **Citrus Augmented**                 | 🟢 Best            | 🟢 Best  | 🟢 Best     | 🟢 Best         | 🟢 Best       | 🟡 Good    |
+| **Generalization**                   | 🟡 Good            | 🟢 Best  | 🟢 Best     | 🟢 Best         | 🟢 Best       | 🟠 Average |
+| **Training Stability**               | 🟢 Best            | 🟢 Best  | 🟡 Good     | 🟢 Best         | 🟡 Good       | 🟠 Average |
+| **Explainability (Grad-CAM / LIME)** | 🟢 Best            | 🟢 Best  | 🟡 Good     | 🟢 Best         | 🟡 Good       | 🔴 Weak    |
+
+
+
+
 ## 🚀 Quick Start
 
 ### 🌐 Use the Web App
@@ -66,7 +77,7 @@ This repository contains the complete project for building and explaining a full
    👉  [**Citrus Fruit Classification**](https://citrus-net.streamlit.app)
 
 2. From the left sidebar:
-   - Select a model:
+   - Select a model: (Best Model Used)
      - CitrusNet [Custom]
      - EfficientNet-B0 [Best]
      - ResNet34
