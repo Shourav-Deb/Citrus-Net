@@ -90,17 +90,9 @@ This repository contains the complete project for building and explaining a full
 
 ⚠️ Important Display Notice
    - This app is styled for Dark mode. Light theme may hide some UI elements.
-   - Change via [Right Side ⋮ → Settings → App Theme → Dark].
+   - Change via [Website → Right Side ⋮ → Settings → App Theme → Dark].
 
 
-### 💻 Run Locally (Optional)
-
-```bash
-git clone https://github.com/Shourav-Deb/Citrus-Net.git
-cd Citrus-Net
-pip install -r requirements.txt
-streamlit run app.py
-```
 ---
 
 ## 📧 Contact
