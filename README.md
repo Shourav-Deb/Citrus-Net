@@ -86,10 +86,11 @@ This repository contains the complete project for building and explaining a full
    - Grad-CAM visual explanations
    - Optional LIME explanations
 
+---
 > ⚠️ Important Display Notice:
 >    - This app is styled for Dark mode. Light theme may hide some UI elements.
 >    - Change via [Website → Right Side ⋮ → Settings → App Theme → Dark].
-
+---
 
 
 ## 📧 Contact
