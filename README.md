@@ -1,8 +1,9 @@
+
+---
 # 🍊 Introducing **Citrus-Net**  
 
 An end-to-end **image classification pipeline** that combines 🧱 **Custom CNN**, 🔁 **Transfer Learning**, and 🔭 **Vision Transformer** models - enhanced with 🧩 **Explainable AI (XAI)** visualizations and deployed in a **Streamlit app**.  
 
----
 
 ![Project Banner](https://i.pinimg.com/originals/b6/79/c1/b679c172a9021d78aef52f7b578393da.png)  
 
@@ -30,6 +31,7 @@ This repository contains the complete project for building and explaining a full
 - 📊 Comparative evaluation (accuracy, precision, recall, F1, confusion matrices).  
 - 🧩 XAI overlays on ≥10 test images with detailed interpretation.  
 - 🌐 Streamlit app for model selection, predictions, and side-by-side explanations.  
+
 
 | Model                    | Training Type     | Test Accuracy                    | Macro F1    | Notes                         |
 | ------------------------ | ----------------- | -------------------------------- | ----------- | ----------------------------- |
@@ -88,12 +90,11 @@ This repository contains the complete project for building and explaining a full
    - Grad-CAM visual explanations
    - Optional LIME explanations
 
-⚠️ Important Display Notice
-   - This app is styled for Dark mode. Light theme may hide some UI elements.
-   - Change via [Website → Right Side ⋮ → Settings → App Theme → Dark].
+> ⚠️ Important Display Notice:
+>    - This app is styled for Dark mode. Light theme may hide some UI elements.
+>    - Change via [Website → Right Side ⋮ → Settings → App Theme → Dark].
 
 
----
 
 ## 📧 Contact
 If you need the trained notebook, models or report file for academic purposes, feel free to [**Contact Anytime**](mailto:heyneeddev@gmail.com).
