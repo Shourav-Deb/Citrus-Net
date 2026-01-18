@@ -1,9 +1,5 @@
 
 ---
-# 🍊 Introducing **Citrus-Net**  
-
-An end-to-end **image classification pipeline** that combines 🧱 **Custom CNN**, 🔁 **Transfer Learning**, and 🔭 **Vision Transformer** models - enhanced with 🧩 **Explainable AI (XAI)** visualizations and deployed in a **Streamlit app**.  
-
 
 ![Project Banner](https://i.pinimg.com/originals/b6/79/c1/b679c172a9021d78aef52f7b578393da.png)  
 
